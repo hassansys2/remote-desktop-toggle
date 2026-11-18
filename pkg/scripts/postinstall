@@ -1,0 +1,17 @@
+#!/bin/sh
+# Runs as root after the app is copied to /Applications.
+set -eu
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+TARGET="${3:-/}"
+APP="${TARGET%/}/Applications/Remote Desktop Toggle.app"
+
+"$APP/Contents/Resources/install-helper.sh"
+
+# Start the app for the logged-in user (best effort).
+console_uid=$(stat -f %u /dev/console 2>/dev/null || echo 0)
+if [ "$console_uid" -ne 0 ]; then
+    launchctl asuser "$console_uid" /usr/bin/open "$APP" || true
+fi
+exit 0

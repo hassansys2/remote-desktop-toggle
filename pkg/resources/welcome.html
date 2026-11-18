@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: -apple-system, sans-serif; font-size: 13px;">
+<h2>Remote Desktop Toggle</h2>
+<p>A menu-bar switch to turn <b>Chrome Remote Desktop</b> access on and off without uninstalling it or redoing setup.</p>
+<ul>
+  <li><b>Off</b>: your Mac goes offline in Chrome Remote Desktop and stays off after a restart. No password needed.</li>
+  <li><b>On</b>: back online in seconds with your existing PIN. Asks for your password or Touch ID.</li>
+</ul>
+<p>This installs:</p>
+<ul>
+  <li><code>/Applications/Remote Desktop Toggle.app</code></li>
+  <li>A small helper in <code>/Library/PrivilegedHelperTools/remote-desktop-toggle/</code></li>
+  <li>A sudoers rule in <code>/etc/sudoers.d/remote-desktop-toggle</code> that allows only the “turn off” action without a password</li>
+</ul>
+<p>Chrome and Chrome Remote Desktop themselves are not modified.</p>
+<p style="color: #888;">Not affiliated with or endorsed by Google.</p>
+</body>
+</html>

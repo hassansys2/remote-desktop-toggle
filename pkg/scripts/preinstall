@@ -1,0 +1,4 @@
+#!/bin/sh
+# Quit a running copy so the app bundle can be replaced cleanly.
+pkill -x RemoteDesktopToggle 2>/dev/null || true
+exit 0
