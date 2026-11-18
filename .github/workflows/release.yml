@@ -1,0 +1,50 @@
+name: Release
+
+# Push a tag like v1.2.0 (matching the VERSION file) to publish a release.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches VERSION
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          FILE_VERSION="$(tr -d '[:space:]' < VERSION)"
+          if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION file ($FILE_VERSION)"
+            exit 1
+          fi
+          echo "VERSION=$FILE_VERSION" >> "$GITHUB_ENV"
+
+      - name: Build installer
+        run: ./scripts/package.sh
+
+      - name: Sign update and write appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: ./scripts/make-appcast.sh "dist/RemoteDesktopToggle-$VERSION.pkg" "$VERSION" > dist/appcast.xml
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/RemoteDesktopToggle-$VERSION.pkg" \
+            dist/appcast.xml \
+            --title "Remote Desktop Toggle $VERSION" \
+            --generate-notes
+
+      - name: Update Homebrew tap
+        env:
+          TAP_DEPLOY_KEY: ${{ secrets.TAP_DEPLOY_KEY }}
+        run: |
+          SHA256="$(shasum -a 256 "dist/RemoteDesktopToggle-$VERSION.pkg" | cut -d' ' -f1)"
+          ./scripts/update-tap.sh "$VERSION" "$SHA256"

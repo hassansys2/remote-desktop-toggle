@@ -1,0 +1,16 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell scripts
+        run: for f in Resources/*.sh scripts/*.sh pkg/scripts/*; do sh -n "$f"; done
+      - name: Build installer
+        run: ./scripts/package.sh

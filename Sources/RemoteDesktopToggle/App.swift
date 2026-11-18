@@ -5,10 +5,11 @@ import SwiftUI
 @main
 struct RemoteDesktopToggleApp: App {
     @StateObject private var crd = CRDController()
+    @StateObject private var updater = Updater()
 
     var body: some Scene {
         MenuBarExtra {
-            MenuContent(crd: crd)
+            MenuContent(crd: crd, updater: updater)
         } label: {
             MenuBarIcon(symbol: crd.iconName, fallbackText: crd.state == .on ? "CRD ON" : "CRD OFF")
                 .accessibilityLabel(crd.statusText)
@@ -33,6 +34,7 @@ struct MenuBarIcon: View {
 
 struct MenuContent: View {
     @ObservedObject var crd: CRDController
+    @ObservedObject var updater: Updater
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
 
     var body: some View {
@@ -79,7 +81,9 @@ struct MenuContent: View {
 
         Divider()
 
-        Button("About Remote Desktop Toggle") { showAbout() }
+        Button("Check for Updates…") { updater.checkForUpdates() }
+            .disabled(!updater.canCheckForUpdates)
+        Button("About Remote Desktop Toggle \(updater.currentVersion)") { showAbout() }
         Button("Uninstall…") { crd.uninstall() }
         Button("Quit") { NSApp.terminate(nil) }
             .keyboardShortcut("q")

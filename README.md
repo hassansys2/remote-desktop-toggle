@@ -12,11 +12,26 @@ without uninstalling it or redoing the web setup.
 
 ## Install
 
+**Homebrew**
+
+```sh
+brew install --cask hassansys2/tap/remote-desktop-toggle
+```
+
+**Or the installer package**
+
 1. Download `RemoteDesktopToggle-<version>.pkg` from [Releases](https://github.com/hassansys2/remote-desktop-toggle/releases).
 2. The package is not notarized, so macOS will block a plain double-click. Right-click it → **Open**
    (or *System Settings → Privacy & Security → Open Anyway*).
 3. Follow the installer. The app starts automatically. Look for the 🖥 icon in the menu bar.
 4. Optional: tick **Launch at Login** in the menu.
+
+## Updates
+
+The app checks for updates once a day (and on demand via **Check for Updates…**) using
+[Sparkle](https://sparkle-project.org). Updates are verified with an EdDSA signature before
+they are installed, and installing asks for your admin password once. Homebrew users can also run
+`brew upgrade --cask remote-desktop-toggle`.
 
 Requires macOS 13 or later and Chrome Remote Desktop already set up for remote access
 (at [remotedesktop.google.com/access](https://remotedesktop.google.com/access)).
@@ -56,7 +71,7 @@ Chrome, Google Updater and the Chrome Remote Desktop extension are not modified.
   standard macOS administrator prompt.
 - The installer refuses to install the helper unless every directory on its path is root-owned and
   not writable by other users (otherwise the sudoers rule could be abused).
-- Everything is plain shell + ~300 lines of Swift. Read it before installing.
+- Everything is plain shell + a few hundred lines of Swift (plus Sparkle for updates). Read it before installing.
 
 ## Uninstall
 
@@ -79,6 +94,22 @@ Requires Xcode (or the Command Line Tools with Swift 5.9+).
 ```
 
 The version comes from the `VERSION` file.
+
+## Releasing a new version
+
+1. Bump the `VERSION` file (e.g. `1.2.0`) and commit.
+2. Tag and push: `git tag v1.2.0 && git push origin main v1.2.0`
+
+The [Release workflow](.github/workflows/release.yml) then builds the `.pkg`, signs it for Sparkle,
+publishes a GitHub Release with the `.pkg` and `appcast.xml`, and updates the cask in
+[hassansys2/homebrew-tap](https://github.com/hassansys2/homebrew-tap).
+
+Repository secrets used by the workflow:
+
+| Secret | What it is |
+|---|---|
+| `SPARKLE_PRIVATE_KEY` | Sparkle EdDSA private key (`generate_keys -x`). The public half is `SUPublicEDKey` in `scripts/build-app.sh`. **If it is lost, existing installs can't verify new updates.** |
+| `TAP_DEPLOY_KEY` | SSH deploy key with write access to `hassansys2/homebrew-tap` |
 
 ## Troubleshooting
 
