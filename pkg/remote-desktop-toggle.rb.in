@@ -15,7 +15,7 @@ cask "remote-desktop-toggle" do
 
   # The app updates itself with Sparkle.
   auto_updates true
-  depends_on macos: ">= :ventura"
+  depends_on macos: :ventura
 
   pkg "RemoteDesktopToggle-#{version}.pkg"
 

@@ -15,7 +15,9 @@ without uninstalling it or redoing the web setup.
 **Homebrew**
 
 ```sh
-brew install --cask hassansys2/tap/remote-desktop-toggle
+brew tap hassansys2/tap
+brew trust hassansys2/tap   # newer Homebrew asks you to trust third-party taps once
+brew install --cask remote-desktop-toggle
 ```
 
 **Or the installer package**
