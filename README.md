@@ -99,14 +99,37 @@ The version comes from the `VERSION` file.
 
 ## Releasing a new version
 
-1. Bump the `VERSION` file (e.g. `1.2.0`) and commit.
-2. Tag and push: `git tag v1.2.0 && git push origin main v1.2.0`
+`main` is protected, so every change (including a version bump) goes through a pull request.
+
+1. On a branch, bump the `VERSION` file (e.g. `1.2.0`), open a pull request, and merge it once
+   the **build** check passes.
+2. Tag the merged commit and push the tag:
+   ```sh
+   git switch main && git pull
+   git tag v1.2.0 && git push origin v1.2.0
+   ```
 
 The [Release workflow](.github/workflows/release.yml) then builds the `.pkg`, signs it for Sparkle,
 publishes a GitHub Release with the `.pkg` and `appcast.xml`, and updates the cask in
 [hassansys2/homebrew-tap](https://github.com/hassansys2/homebrew-tap).
 
-Repository secrets used by the workflow:
+Tags can't be moved or deleted and published releases are immutable. If a release run fails
+after its tag is pushed, fix the problem and release the next version (e.g. `v1.2.1`) instead of
+reusing the tag.
+
+### Repository protections
+
+| What | Rule |
+|---|---|
+| `main` | Pull request + passing **build** check required; no force-push or deletion. Pull requests from anyone but the owner also need the code owner's approval ([CODEOWNERS](.github/CODEOWNERS)). |
+| Tags | Only the owner can create tags; nobody can move or delete them. |
+| Releases | Immutable once published. |
+| Actions | Default token is read-only; workflows from external contributors need approval. |
+
+### Secrets
+
+Both secrets are stored in the `release` **environment**, which only `v*` tags can use, so
+pull-request and branch builds never see them.
 
 | Secret | What it is |
 |---|---|
