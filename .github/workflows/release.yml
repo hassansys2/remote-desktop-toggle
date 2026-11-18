@@ -11,6 +11,8 @@ permissions:
 jobs:
   release:
     runs-on: macos-latest
+    # Signing secrets live in this environment, which only v* tags may use.
+    environment: release
     steps:
       - uses: actions/checkout@v4
 
