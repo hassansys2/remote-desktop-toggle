@@ -52,11 +52,13 @@ final class CRDController: ObservableObject {
 
     // MARK: - Status
 
+    /// SF Symbol names. Every name here must exist on macOS 13+, otherwise the menu-bar item
+    /// renders blank and the app becomes unreachable (see `MenuBarIcon` for the fallback).
     var iconName: String {
         switch state {
         case .on, .turningOn: return "display"
         case .enabledButStopped, .disabledButRunning: return "exclamationmark.triangle"
-        default: return "display.slash"
+        default: return "lock.display"
         }
     }
 

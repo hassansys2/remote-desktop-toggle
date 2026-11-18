@@ -10,10 +10,24 @@ struct RemoteDesktopToggleApp: App {
         MenuBarExtra {
             MenuContent(crd: crd)
         } label: {
-            Image(systemName: crd.iconName)
+            MenuBarIcon(symbol: crd.iconName, fallbackText: crd.state == .on ? "CRD ON" : "CRD OFF")
                 .accessibilityLabel(crd.statusText)
         }
         .menuBarExtraStyle(.menu)
+    }
+}
+
+/// Never lets the menu-bar item go blank: falls back to text if a symbol is unavailable.
+struct MenuBarIcon: View {
+    let symbol: String
+    let fallbackText: String
+
+    var body: some View {
+        if NSImage(systemSymbolName: symbol, accessibilityDescription: nil) != nil {
+            Image(systemName: symbol)
+        } else {
+            Text(fallbackText)
+        }
     }
 }
 
